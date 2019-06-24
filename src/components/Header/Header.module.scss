@@ -1,0 +1,16 @@
+.headerContainer {
+  grid-area: header;
+  padding: 0 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  input {
+    border: none;
+    border-radius: 25px;
+    background-color: #f7f7f7;
+    width: 20rem;
+    padding: 0.5rem 1rem;
+    font-style: italic;
+  }
+}

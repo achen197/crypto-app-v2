@@ -1,0 +1,52 @@
+.sidebarContainer {
+  grid-area: sidebar;
+  height: 100vh;
+
+  background: #683aa1; /* fallback for old browsers */
+  background: -webkit-linear-gradient(
+    170deg,
+    #683aa1 2%,
+    #492682 100%
+  ); /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(
+    170deg,
+    #683aa1 2%,
+    #492682 100%
+  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
+  .logo {
+    width: 60px;
+    padding: 2rem 0 1rem 0;
+    display: block;
+    margin: 0 auto;
+  }
+
+  h2 {
+    margin-top: 0;
+    text-align: center;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 5px;
+  }
+
+  nav {
+    color: white;
+
+    ul {
+      list-style: none;
+      font-size: 1.25rem;
+      letter-spacing: 1px;
+      margin-top: 3rem;
+      font-family: 'Rubik', sans-serif;
+
+      li {
+        color: white;
+        margin: 3rem 0;
+      }
+
+      a {
+        text-decoration: none;
+      }
+    }
+  }
+}

@@ -1,0 +1,78 @@
+.newsContainer {
+  .headlineCard {
+    background: white;
+    box-shadow: 3px 4px 9px 2px rgba(182, 166, 255, 0.2);
+    border-radius: 8px;
+    padding: 1.25rem;
+    width: 45rem;
+    margin-bottom: 1rem;
+    
+    display: grid;
+    grid-template-areas: 'image content';
+    grid-template-columns: 1fr 2fr;
+
+
+    img {
+      border-radius: 8px;
+      grid-area: image;
+    }
+
+    .content {
+        grid-area: content;
+        display: grid;
+        grid-template-areas:
+        'category date'
+        'title title'
+        'body body'
+        'author .';
+        grid-template-rows: 3rem min-content min-content 3rem;
+        padding: 0 1rem;
+
+        .category {
+            grid-area: category;
+            letter-spacing: 3px;
+            font-weight: 400;
+            color: #44364a;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+        }
+
+        .date {
+            grid-area: date;
+            font-style: italic;
+            font-size: 0.85rem;
+            color: #969696;
+            text-align: right;
+        }
+
+        .title {
+            grid-area: title;
+            font-size: 1.25rem;
+            margin: 0;
+            margin-top: 0.5rem;
+            line-height: 36px;
+        }
+
+        .body {
+            font-size: 0.9rem;
+            line-height: 24px;
+            color: #5e5e5e;
+            grid-area: body;
+        }
+
+        .author {
+            grid-area: author;
+            color: #757575;
+            line-height: 28px;
+            font-size: 0.9rem;
+            display: inline-flex;
+            
+            img {
+                width: 25px;
+                border-radius: 50%;
+                margin-right: 0.5rem;
+            }
+        }
+    }
+  }
+}

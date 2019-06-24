@@ -1,0 +1,8 @@
+.App {
+  display: grid;
+  grid-template-areas: 
+  'sidebar header'
+  'sidebar content';
+  grid-template-columns: 15rem auto ;
+  grid-template-rows: 5rem auto;
+}

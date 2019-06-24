@@ -1,0 +1,17 @@
+.dashboardContainer{
+    .newsCard {
+        border: 1px solid #f2f2f2;
+        border-radius: 8px;
+        position: relative;
+        width: 18.75rem;
+        margin: 1rem;
+
+        img {
+            border-radius: 8px 8px 0 0;
+        }
+
+        .newsTitle {
+            padding: 0 1.5rem;
+        }
+    }
+}
