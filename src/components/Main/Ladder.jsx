@@ -3,30 +3,6 @@ import styles from "./Ladder.module.scss";
 import axios from "axios";
 import { AreaChart, Area } from "recharts";
 
-const data = [
-  {
-    name: 'Page A', uv: 4000, pv: 2400, amt: 2400,
-  },
-  {
-    name: 'Page B', uv: 3000, pv: 1398, amt: 2210,
-  },
-  {
-    name: 'Page C', uv: 2000, pv: 9800, amt: 2290,
-  },
-  {
-    name: 'Page D', uv: 2780, pv: 3908, amt: 2000,
-  },
-  {
-    name: 'Page E', uv: 1890, pv: 4800, amt: 2181,
-  },
-  {
-    name: 'Page F', uv: 2390, pv: 3800, amt: 2500,
-  },
-  {
-    name: 'Page G', uv: 3490, pv: 4300, amt: 2100,
-  },
-];
-
 export class Ladder extends React.Component {
   constructor() {
     super();
@@ -37,57 +13,46 @@ export class Ladder extends React.Component {
     };
   }
 
+  renderHistorical(symbolname) {
+    return axios.get(
+      "https://min-api.cryptocompare.com/data/histoday?tsym=USD&limit=12&aggregate=3&e=CCCAGG&",
+      {
+        params: {
+          fsym: symbolname
+        }
+      }
+    );
+  }
+
   componentDidMount() {
-    // axios
-    //   .all([
-    //     axios.get(
-    //       "https://min-api.cryptocompare.com/data/histoday?fsym=BTC&tsym=USD&limit=12&aggregate=3&e=CCCAGG"
-    //     ),
-    //     axios.get(
-    //       "https://min-api.cryptocompare.com/data/top/totalvolfull?limit=50&tsym=USD"
-    //     )
-    //   ])
-    //   .then(
-    //     axios.spread((historicalRes, itemRes) => {
-    //       const historical = historicalRes.data.Data;
-    //       const items = itemRes.data.Data;
-    //       this.setState({ historical, items, isLoading: true });
-    //       console.log(historical);
-    //       console.log(items);
-    //     })
-    //   )
-    //   .catch(err => {
-    //     console.log(err);
-    //   });
     axios
       .get(
         "https://min-api.cryptocompare.com/data/top/totalvolfull?limit=50&tsym=USD"
       )
       .then(itemRes => {
         const items = itemRes.data.Data;
-        this.setState({ items, isLoading: true, });
+        this.setState({ items, isLoading: true });
         let symbol = items.map(item => item.CoinInfo.Name);
-        return axios.get(
-          'https://min-api.cryptocompare.com/data/histoday?tsym=USD&limit=12&aggregate=3&e=CCCAGG&', {
-            params: {
-              fsym: symbol[0]
-            }
-          }
-        );
-      })
-      .then(historicalRes => {
-        const historical = historicalRes.data.Data;
-        this.setState({ historical, isLoading: true });
-        console.log(historical);
+        console.log(symbol);
+        return Promise.all(
+          symbol.map(symbolname => {
+            return this.renderHistorical(symbolname)
+          })
+        ).then(historicalRes => {
+          let historical = historicalRes.map(item => {
+            return item.data.Data;
+          });
+          this.setState({ historical, isLoading: true });
+          console.log(historical);
+        });
       })
       .catch(err => {
         console.log(err);
       });
+  }
 
-    }
-    
-    render() {
-      const { isLoading, items, historical } = this.state;
+  render() {
+    const { isLoading, items, historical } = this.state;
     if (!isLoading) {
       return <h1>Loading...</h1>;
     } else {
