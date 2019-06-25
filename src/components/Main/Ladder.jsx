@@ -9,24 +9,18 @@ export class Ladder extends React.Component {
     this.state = {
       historical: [],
       items: [],
-      combinedItems: [],
-      coinSymbols:[],
       isLoading: false
     };
   }
 
-  renderCoinInfo() {
+  getCoinInfo() {
     return axios
       .get(
         "https://min-api.cryptocompare.com/data/top/totalvolfull?limit=50&tsym=USD"
       )
-      .then(res => {
-        const items = res.data.Data;
-        this.setState({ items });
-      });
   }
 
-  renderCoinSymbol() {
+  getCoinSymbol() {
     axios
       .get(
         "https://min-api.cryptocompare.com/data/top/totalvolfull?limit=50&tsym=USD"
@@ -34,13 +28,11 @@ export class Ladder extends React.Component {
       .then(itemRes => {
         const item = itemRes.data.Data;
         const coinSymbols = item.map(sym => sym.CoinInfo.Name);
-        this.setState({coinSymbols})
-        console.log(coinSymbols);
-        // const symbol = item.map(sym => sym.)
-      })
+        this.setState({ coinSymbols });
+      });
   }
 
-  renderCoinHistory(symbolname) {
+  getCoinHistory(symbolname) {
     return axios.get(
       "https://min-api.cryptocompare.com/data/histoday?tsym=USD&limit=12&aggregate=3&e=CCCAGG&",
       {
@@ -52,50 +44,20 @@ export class Ladder extends React.Component {
   }
 
   componentDidMount() {
-    console.log(this.renderCoinSymbol());
-    // let combinedItems = combineLatest(this.renderCoinInfo(), this.renderCoinHistory("BTC")
-    // .map(([first, second]) => {
-    //     let keys = Object.keys(first);
-    //     let combined = [];
-    //     for (let key in keys) {
-    //       let data = first[keys[keys]];
-    //       let history = second[keys[key]];
-    //       combined.push({CoinInfo: data, CoinHistory: history})
-    //     }
-    //     // const combinedItems = combined;
-    //     // this.setState({combinedItems});
-    //   }));
-    //   // console.log(combinedItems);
-    //   // return combinedItems;
-    axios
-      .get(
-        "https://min-api.cryptocompare.com/data/top/totalvolfull?limit=50&tsym=USD"
-      )
+    this.getCoinInfo() 
       .then(itemRes => {
         const items = itemRes.data.Data;
-        this.setState({ items, isLoading: true });
-        // let symbol = items.map(item => item.CoinInfo.Name);
-        // return Promise.all(
-        //   symbol.map(symbolname => {
-        //     return this.renderCoinHistory(symbolname).then(res => ({
-        //       symbol: symbolname,
-        //       history: res
-        //     }));
-        //   })
-        // )
-        // .then(historicalRes => {
-        //   let historical = historicalRes.map(item => {
-        //     return item;
-        //   });
-        //   this.setState({ historical, isLoading: true });
-        //   console.log(items);
-        //   // console.log(historical);
-        //   // return items.map(item => console.log({...item.CoinInfo, CoinHistory: historical}));
-        // });
+        this.setState({ items });
       })
       .catch(err => {
         console.log(err);
       });
+
+    this.getCoinHistory("BTC").then(historyRes => {
+      const historical = historyRes.data.Data;
+      this.setState({ historical, isLoading: true });
+      console.log(historical);
+    });
   }
 
   render() {
