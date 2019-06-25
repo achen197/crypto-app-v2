@@ -9,11 +9,38 @@ export class Ladder extends React.Component {
     this.state = {
       historical: [],
       items: [],
+      combinedItems: [],
+      coinSymbols:[],
       isLoading: false
     };
   }
 
-  renderHistorical(symbolname) {
+  renderCoinInfo() {
+    return axios
+      .get(
+        "https://min-api.cryptocompare.com/data/top/totalvolfull?limit=50&tsym=USD"
+      )
+      .then(res => {
+        const items = res.data.Data;
+        this.setState({ items });
+      });
+  }
+
+  renderCoinSymbol() {
+    axios
+      .get(
+        "https://min-api.cryptocompare.com/data/top/totalvolfull?limit=50&tsym=USD"
+      )
+      .then(itemRes => {
+        const item = itemRes.data.Data;
+        const coinSymbols = item.map(sym => sym.CoinInfo.Name);
+        this.setState({coinSymbols})
+        console.log(coinSymbols);
+        // const symbol = item.map(sym => sym.)
+      })
+  }
+
+  renderCoinHistory(symbolname) {
     return axios.get(
       "https://min-api.cryptocompare.com/data/histoday?tsym=USD&limit=12&aggregate=3&e=CCCAGG&",
       {
@@ -25,6 +52,21 @@ export class Ladder extends React.Component {
   }
 
   componentDidMount() {
+    console.log(this.renderCoinSymbol());
+    // let combinedItems = combineLatest(this.renderCoinInfo(), this.renderCoinHistory("BTC")
+    // .map(([first, second]) => {
+    //     let keys = Object.keys(first);
+    //     let combined = [];
+    //     for (let key in keys) {
+    //       let data = first[keys[keys]];
+    //       let history = second[keys[key]];
+    //       combined.push({CoinInfo: data, CoinHistory: history})
+    //     }
+    //     // const combinedItems = combined;
+    //     // this.setState({combinedItems});
+    //   }));
+    //   // console.log(combinedItems);
+    //   // return combinedItems;
     axios
       .get(
         "https://min-api.cryptocompare.com/data/top/totalvolfull?limit=50&tsym=USD"
@@ -32,22 +74,24 @@ export class Ladder extends React.Component {
       .then(itemRes => {
         const items = itemRes.data.Data;
         this.setState({ items, isLoading: true });
-        console.log(items);
-        let symbol = items.map(item => item.CoinInfo.Name);
-        return Promise.all(
-          symbol.map(symbolname => {
-            return this.renderHistorical(symbolname).then(res => ({
-              symbol: symbolname,
-              history: res
-            }));
-          })
-        ).then(historicalRes => {
-          let historical = historicalRes.map(item => {
-            return item;
-          });
-          this.setState({ historical, isLoading: true });
-          console.log(historical);
-        });
+        // let symbol = items.map(item => item.CoinInfo.Name);
+        // return Promise.all(
+        //   symbol.map(symbolname => {
+        //     return this.renderCoinHistory(symbolname).then(res => ({
+        //       symbol: symbolname,
+        //       history: res
+        //     }));
+        //   })
+        // )
+        // .then(historicalRes => {
+        //   let historical = historicalRes.map(item => {
+        //     return item;
+        //   });
+        //   this.setState({ historical, isLoading: true });
+        //   console.log(items);
+        //   // console.log(historical);
+        //   // return items.map(item => console.log({...item.CoinInfo, CoinHistory: historical}));
+        // });
       })
       .catch(err => {
         console.log(err);
