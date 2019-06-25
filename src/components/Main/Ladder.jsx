@@ -14,10 +14,9 @@ export class Ladder extends React.Component {
   }
 
   getCoinInfo() {
-    return axios
-      .get(
-        "https://min-api.cryptocompare.com/data/top/totalvolfull?limit=50&tsym=USD"
-      )
+    return axios.get(
+      "https://min-api.cryptocompare.com/data/top/totalvolfull?limit=50&tsym=USD"
+    );
   }
 
   getCoinSymbol() {
@@ -44,19 +43,35 @@ export class Ladder extends React.Component {
   }
 
   componentDidMount() {
-    this.getCoinInfo() 
-      .then(itemRes => {
-        const items = itemRes.data.Data;
-        this.setState({ items });
-      })
-      .catch(err => {
-        console.log(err);
+    axios
+    .get(
+      "https://min-api.cryptocompare.com/data/top/totalvolfull?limit=50&tsym=USD"
+    )
+    .then(itemRes => {
+      const items = itemRes.data.Data;
+      this.setState({ items, isLoading: true });
+      let symbol = items.map(item => item.CoinInfo.Name);
+      return Promise.all(
+        symbol.map(symbolname => {
+          return this.getCoinHistory(symbolname).then(res => ({
+            symbol: symbolname,
+            history: res
+          }));
+        })
+      ).then(historicalRes => {
+        let history = historicalRes.map(item => {
+          return item;
+        });
+        let historical = history.reduce((acc, value) => {
+          acc[value.symbol] = value.history.data.Data;
+          return acc;
+        }, {});
+        this.setState({ historical, isLoading: true });
+        console.log(historical);
       });
-
-    this.getCoinHistory("BTC").then(historyRes => {
-      const historical = historyRes.data.Data;
-      this.setState({ historical, isLoading: true });
-      console.log(historical);
+    })
+    .catch(err => {
+      console.log(err);
     });
   }
 
@@ -112,7 +127,7 @@ export class Ladder extends React.Component {
                       <AreaChart
                         width={200}
                         height={45}
-                        data={historical}
+                        data={historical[item.CoinInfo.Name]}
                         margin={{
                           top: 0,
                           right: 0,
