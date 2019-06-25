@@ -32,15 +32,18 @@ export class Ladder extends React.Component {
       .then(itemRes => {
         const items = itemRes.data.Data;
         this.setState({ items, isLoading: true });
+        console.log(items);
         let symbol = items.map(item => item.CoinInfo.Name);
-        console.log(symbol);
         return Promise.all(
           symbol.map(symbolname => {
-            return this.renderHistorical(symbolname)
+            return this.renderHistorical(symbolname).then(res => ({
+              symbol: symbolname,
+              history: res
+            }));
           })
         ).then(historicalRes => {
           let historical = historicalRes.map(item => {
-            return item.data.Data;
+            return item;
           });
           this.setState({ historical, isLoading: true });
           console.log(historical);
@@ -61,62 +64,67 @@ export class Ladder extends React.Component {
           <div className={styles.coinsContainer}>
             <p>Updated Just Now</p>
             <table>
-              <tr>
-                <th>Coin</th>
-                <th>Price</th>
-                <th>Market Cap</th>
-                <th>Volume 24HR</th>
-                <th>Change 24HR</th>
-                <th>Price Graph</th>
-              </tr>
-              {items.map(item => (
-                <tr className={styles.newsCard} key={item.CoinInfo.Id}>
-                  <td className={styles.coinInfo}>
-                    <img
-                      src={
-                        "https://www.cryptocompare.com" + item.CoinInfo.ImageUrl
-                      }
-                      alt={item.CoinInfo.FullName}
-                      className={styles.coinImg}
-                    />
-                    <span className={styles.Name}>
-                      {item.CoinInfo.FullName}
-                    </span>
-                  </td>
-                  <td>${item.RAW.USD.PRICE.toFixed(2)}</td>
-                  <td>${item.RAW.USD.MKTCAP.toFixed(2)}</td>
-                  <td>${item.RAW.USD.VOLUME24HOUR.toFixed(2)}</td>
-                  <td
-                    className={
-                      item.RAW.USD.CHANGEPCTDAY > 0
-                        ? styles.positive
-                        : styles.negative
-                    }
-                  >
-                    {item.RAW.USD.CHANGEPCTDAY.toFixed(2)}%
-                  </td>
-                  <td>
-                    <AreaChart
-                      width={200}
-                      height={45}
-                      data={historical}
-                      margin={{
-                        top: 0,
-                        right: 0,
-                        left: 0,
-                        bottom: 0
-                      }}
-                    >
-                      <Area
-                        type="monotone"
-                        dataKey="close"
-                        stroke="#8884d8"
-                        fill="#8884d8"
-                      />
-                    </AreaChart>
-                  </td>
+              <thead>
+                <tr>
+                  <th>Coin</th>
+                  <th>Price</th>
+                  <th>Market Cap</th>
+                  <th>Volume 24HR</th>
+                  <th>Change 24HR</th>
+                  <th>Price Graph</th>
                 </tr>
-              ))}
+              </thead>
+              <tbody>
+                {items.map(item => (
+                  <tr className={styles.newsCard} key={item.CoinInfo.Id}>
+                    <td className={styles.coinInfo}>
+                      <img
+                        src={
+                          "https://www.cryptocompare.com" +
+                          item.CoinInfo.ImageUrl
+                        }
+                        alt={item.CoinInfo.FullName}
+                        className={styles.coinImg}
+                      />
+                      <span className={styles.Name}>
+                        {item.CoinInfo.FullName}
+                      </span>
+                    </td>
+                    <td>${item.RAW.USD.PRICE.toFixed(2)}</td>
+                    <td>${item.RAW.USD.MKTCAP.toFixed(2)}</td>
+                    <td>${item.RAW.USD.VOLUME24HOUR.toFixed(2)}</td>
+                    <td
+                      className={
+                        item.RAW.USD.CHANGEPCTDAY > 0
+                          ? styles.positive
+                          : styles.negative
+                      }
+                    >
+                      {item.RAW.USD.CHANGEPCTDAY.toFixed(2)}%
+                    </td>
+                    <td>
+                      <AreaChart
+                        width={200}
+                        height={45}
+                        data={historical}
+                        margin={{
+                          top: 0,
+                          right: 0,
+                          left: 0,
+                          bottom: 0
+                        }}
+                      >
+                        <Area
+                          type="monotone"
+                          dataKey="close"
+                          stroke="#8884d8"
+                          fill="#8884d8"
+                        />
+                      </AreaChart>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
             </table>
           </div>
         </div>
