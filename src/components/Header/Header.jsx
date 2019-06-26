@@ -4,7 +4,7 @@ import styles from './Header.module.scss';
 function Header() {
     return(
         <div className={styles.headerContainer}>
-            <h1>Crypto</h1>
+            <h1>Dashboard</h1>
             <input type="text" placeholder="Search..." name="search"></input>
         </div>
     )

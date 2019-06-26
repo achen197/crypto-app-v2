@@ -14,26 +14,41 @@ export class Ladder extends React.Component {
   }
 
   getCoinInfo() {
-    return axios.get(
-      "https://min-api.cryptocompare.com/data/top/totalvolfull?limit=50&tsym=USD"
-    );
-  }
-
-  getCoinSymbol() {
-    axios
+    return axios
       .get(
-        "https://min-api.cryptocompare.com/data/top/totalvolfull?limit=50&tsym=USD"
+        "https://min-api.cryptocompare.com/data/top/totalvolfull?limit=100&tsym=USD"
       )
       .then(itemRes => {
-        const item = itemRes.data.Data;
-        const coinSymbols = item.map(sym => sym.CoinInfo.Name);
-        this.setState({ coinSymbols });
+        const items = itemRes.data.Data;
+        this.setState({ items, isLoading: true });
+        let symbol = items.map(item => item.CoinInfo.Name);
+        return Promise.all(
+          symbol.map(symbolname => {
+            return this.getCoinHistory(symbolname).then(res => ({
+              symbol: symbolname,
+              history: res
+            }));
+          })
+        ).then(historicalRes => {
+          let history = historicalRes.map(item => {
+            return item;
+          });
+          let historical = history.reduce((acc, value) => {
+            acc[value.symbol] = value.history.data.Data;
+            return acc;
+          }, {});
+          this.setState({ historical, isLoading: true });
+          console.log(historical);
+        });
+      })
+      .catch(err => {
+        console.log(err);
       });
   }
 
   getCoinHistory(symbolname) {
     return axios.get(
-      "https://min-api.cryptocompare.com/data/histoday?tsym=USD&limit=12&aggregate=3&e=CCCAGG&",
+      "https://min-api.cryptocompare.com/data/histoday?tsym=USD&limit=20&aggregate=3&e=CCCAGG&",
       {
         params: {
           fsym: symbolname
@@ -43,36 +58,8 @@ export class Ladder extends React.Component {
   }
 
   componentDidMount() {
-    axios
-    .get(
-      "https://min-api.cryptocompare.com/data/top/totalvolfull?limit=50&tsym=USD"
-    )
-    .then(itemRes => {
-      const items = itemRes.data.Data;
-      this.setState({ items, isLoading: true });
-      let symbol = items.map(item => item.CoinInfo.Name);
-      return Promise.all(
-        symbol.map(symbolname => {
-          return this.getCoinHistory(symbolname).then(res => ({
-            symbol: symbolname,
-            history: res
-          }));
-        })
-      ).then(historicalRes => {
-        let history = historicalRes.map(item => {
-          return item;
-        });
-        let historical = history.reduce((acc, value) => {
-          acc[value.symbol] = value.history.data.Data;
-          return acc;
-        }, {});
-        this.setState({ historical, isLoading: true });
-        console.log(historical);
-      });
-    })
-    .catch(err => {
-      console.log(err);
-    });
+    this.getCoinInfo();
+    // this.timer = setInterval(() => this.getCoinInfo(), 10000);
   }
 
   render() {
